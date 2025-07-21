@@ -26,9 +26,14 @@ export default function NavBar() {
               </button>
             </>
           ) : (
-            <Link href="/login" className="text-blue-600 underline">
-              Login
-            </Link>
+            <>
+              <Link href="/login" className="text-blue-600 underline">
+                Login
+              </Link>
+              <Link href="/register" className="text-blue-600 underline">
+                Register
+              </Link>
+            </>
           )}
         </div>
       </nav>
