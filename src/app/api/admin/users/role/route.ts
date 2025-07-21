@@ -15,10 +15,15 @@ export async function PATCH(req: Request) {
   }
   // Prevent self-demotion
   if (session.user.id === userId && newRole !== "admin") {
-    return NextResponse.json({ error: "Cannot demote yourself from admin." }, { status: 400 });
+    return NextResponse.json({ error: "Admins cannot demote themselves" }, { status: 400 });
   }
   const client = await clientPromise;
   const db = client.db();
+  const adminCount = await db.collection("users").countDocuments({ role: "admin" });
+  const targetUser = await db.collection("users").findOne({ _id: new ObjectId(userId) });
+  if (targetUser?.role === "admin" && newRole !== "admin" && adminCount === 1) {
+    return NextResponse.json({ error: "Cannot demote the last remaining admin" }, { status: 400 });
+  }
   await db.collection("users").updateOne(
     { _id: new ObjectId(userId) },
     { $set: { role: newRole } }

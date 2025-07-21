@@ -30,6 +30,11 @@ export async function DELETE(req: Request) {
   }
   const client = await clientPromise;
   const db = client.db();
+  const adminCount = await db.collection("users").countDocuments({ role: "admin" });
+  const targetUser = await db.collection("users").findOne({ _id: new ObjectId(userId) });
+  if (targetUser?.role === "admin" && adminCount === 1) {
+    return NextResponse.json({ error: "Cannot delete the only admin account" }, { status: 400 });
+  }
   await db.collection("users").deleteOne({ _id: new ObjectId(userId) });
   return NextResponse.json({ success: true });
 } 
