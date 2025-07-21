@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
+import ConfirmModal from "@/components/ConfirmModal";
 interface User {
   _id: string;
   email: string;
@@ -13,6 +14,7 @@ export default function AdminUserPage() {
   const [actionError, setActionError] = useState("");
   const [search, setSearch] = useState("");
   const [loading, setLoading] = useState(false);
+  const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
   const session = useSession().data;
   const sessionUserId = session?.user?.id || "";
   const adminCount = users.filter(u => u.role === "admin").length;
@@ -38,14 +40,18 @@ export default function AdminUserPage() {
 
   const handleDelete = async (userId: string) => {
     setActionError("");
-    if (!confirm("Are you sure you want to delete this user?")) return;
+    setConfirmDeleteId(userId); // Open modal
+  };
+  const confirmDelete = async () => {
+    if (!confirmDeleteId) return;
     setLoading(true);
     const res = await fetch("/api/admin/users", {
       method: "DELETE",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ userId }),
+      body: JSON.stringify({ userId: confirmDeleteId }),
     });
     setLoading(false);
+    setConfirmDeleteId(null);
     if (res.status !== 200) {
       setActionError((await res.json()).error || "Failed to delete user");
     } else {
@@ -134,6 +140,14 @@ export default function AdminUserPage() {
           ))}
         </tbody>
       </table>
+      {confirmDeleteId && (
+        <ConfirmModal
+          title="Confirm Deletion"
+          message="Are you sure you want to delete this user? This action cannot be undone."
+          onConfirm={confirmDelete}
+          onCancel={() => setConfirmDeleteId(null)}
+        />
+      )}
     </main>
   );
 } 
