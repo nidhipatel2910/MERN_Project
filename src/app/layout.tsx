@@ -21,7 +21,6 @@ return (
 <footer className="mt-auto bg-white p-4 text-center text-sm border-t">
 &copy; 2025 MERN Full-Stack Tutorial
 </footer>
-9
 </body>
 </html>
 );
