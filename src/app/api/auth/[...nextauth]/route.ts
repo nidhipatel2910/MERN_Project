@@ -55,22 +55,23 @@ const handler = NextAuth({
         if (!user.email) return false;
         const existing = await users.findOne({ email: user.email });
         if (existing && !existing.oauthProvider) {
-          // Optional: update user record to indicate OAuth linkage
           await users.updateOne(
             { _id: new ObjectId(existing._id) },
             { $set: { oauthProvider: account.provider } }
           );
           user.id = existing._id.toString();
+          (user as any).role = existing.role || "user";
           return true;
         }
         if (!existing) {
-          // Create new record for OAuth user
           await users.insertOne({
             email: user.email,
             name: user.name || user.email,
             oauthProvider: account.provider,
+            role: "user",
             createdAt: new Date(),
           });
+          (user as any).role = "user";
         }
       }
       return true;
@@ -78,12 +79,16 @@ const handler = NextAuth({
     async jwt({ token, user, account }) {
       if (user) {
         token.id = user.id;
+        token.role = (user as any).role || "user";
       }
       return token;
     },
     async session({ session, token }) {
       if (token?.id && session.user && typeof session.user === 'object') {
         (session.user as any).id = token.id;
+      }
+      if (token?.role && session.user && typeof session.user === 'object') {
+        (session.user as any).role = token.role;
       }
       return session;
     },
