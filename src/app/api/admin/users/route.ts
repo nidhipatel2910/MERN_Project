@@ -3,6 +3,7 @@ import { authOptions } from "@/app/api/auth/[...nextauth]/authOptions";
 import clientPromise from "@/lib/mongodb";
 import { NextResponse } from "next/server";
 import { ObjectId } from "mongodb";
+import { logAuditEvent } from "@/lib/audit";
 
 export async function GET(req: Request) {
   const session = await getServerSession(authOptions);
@@ -36,5 +37,15 @@ export async function DELETE(req: Request) {
     return NextResponse.json({ error: "Cannot delete the only admin account" }, { status: 400 });
   }
   await db.collection("users").deleteOne({ _id: new ObjectId(userId) });
+  await logAuditEvent({
+    actorId: session.user.id,
+    action: "DELETE_USER",
+    targetUserId: userId,
+    details: {
+      deletedUserEmail: targetUser.email,
+      deletedUserName: targetUser.name,
+      deletedUserRole: targetUser.role,
+    },
+  });
   return NextResponse.json({ success: true });
 } 

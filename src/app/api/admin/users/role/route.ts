@@ -3,6 +3,7 @@ import { authOptions } from "@/app/api/auth/[...nextauth]/authOptions";
 import clientPromise from "@/lib/mongodb";
 import { ObjectId } from "mongodb";
 import { NextResponse } from "next/server";
+import { logAuditEvent } from "@/lib/audit";
 
 export async function PATCH(req: Request) {
   const session = await getServerSession(authOptions);
@@ -28,5 +29,14 @@ export async function PATCH(req: Request) {
     { _id: new ObjectId(userId) },
     { $set: { role: newRole } }
   );
+  await logAuditEvent({
+    actorId: session.user.id,
+    action: "UPDATE_ROLE",
+    targetUserId: userId,
+    details: {
+      previousRole: targetUser.role,
+      newRole,
+    },
+  });
   return NextResponse.json({ success: true, role: newRole });
 } 
