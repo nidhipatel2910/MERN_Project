@@ -32,6 +32,7 @@ export const authOptions: NextAuthOptions = {
           id: user._id.toString(),
           email: user.email,
           name: user.name || user.email,
+          role: user.role || "user",
         };
       },
     }),
@@ -73,6 +74,8 @@ export const authOptions: NextAuthOptions = {
             createdAt: new Date(),
           });
           (user as any).role = "user";
+        } else {
+          (user as any).role = existing.role || "user";
         }
       }
       return true;

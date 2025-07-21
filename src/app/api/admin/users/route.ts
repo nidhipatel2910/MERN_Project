@@ -1,11 +1,12 @@
 import { getServerSession } from "next-auth";
-import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+import { authOptions } from "@/app/api/auth/[...nextauth]/authOptions";
 import clientPromise from "@/lib/mongodb";
 import { NextResponse } from "next/server";
 import { ObjectId } from "mongodb";
 
 export async function GET(req: Request) {
   const session = await getServerSession(authOptions);
+  console.log("API session:", session); // Debug session object
   if (!session || session.user.role !== "admin") {
     return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
   }
@@ -16,24 +17,6 @@ export async function GET(req: Request) {
     .find({}, { projection: { password: 0 } })
     .toArray();
   return NextResponse.json({ users });
-}
-
-export async function PATCH(req: Request) {
-  const session = await getServerSession(authOptions);
-  if (!session || session.user.role !== "admin") {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
-  }
-  const { userId, role } = await req.json();
-  if (!userId || !role) {
-    return NextResponse.json({ error: "Missing userId or role" }, { status: 400 });
-  }
-  const client = await clientPromise;
-  const db = client.db();
-  await db.collection("users").updateOne(
-    { _id: new ObjectId(userId) },
-    { $set: { role } }
-  );
-  return NextResponse.json({ success: true });
 }
 
 export async function DELETE(req: Request) {
