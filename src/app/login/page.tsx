@@ -8,6 +8,7 @@ export default function LoginPage() {
   const [error, setError] = useState("");
   const router = useRouter();
   const params = useSearchParams();
+  const callbackUrl = params.get("callbackUrl") || "/dashboard";
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -16,11 +17,14 @@ export default function LoginPage() {
       redirect: false,
       email: form.email,
       password: form.password,
+      callbackUrl,
     });
     if (res?.error) {
       setError("Invalid email or password");
+    } else if (res && res.url) {
+      router.push(res.url);
     } else {
-      router.push("/dashboard");
+      router.push(callbackUrl);
     }
   }
 
@@ -50,7 +54,7 @@ export default function LoginPage() {
         </button>
         <button
           type="button"
-          onClick={() => signIn("google", { callbackUrl: "/dashboard" })}
+          onClick={() => signIn("google", { callbackUrl })}
           className="bg-red-600 text-white px-4 py-2 mt-4 w-full rounded"
         >
           Sign in with Google
