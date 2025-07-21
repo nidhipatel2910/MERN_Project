@@ -48,6 +48,13 @@ export default function LoginPage() {
         <button type="submit" className="bg-blue-600 text-white px-4 py-2">
           Sign In
         </button>
+        <button
+          type="button"
+          onClick={() => signIn("google", { callbackUrl: "/dashboard" })}
+          className="bg-red-600 text-white px-4 py-2 mt-4 w-full rounded"
+        >
+          Sign in with Google
+        </button>
       </form>
     </main>
   );
