@@ -1,8 +1,14 @@
+"use client";
+import { useSession } from "next-auth/react";
+
 export default function DashboardPage() {
+  const { data: session } = useSession();
   return (
-    <main className="max-w-2xl mx-auto mt-10 p-6 bg-white shadow rounded">
-      <h1 className="text-2xl font-bold mb-4">Dashboard</h1>
-      <p>Welcome to your dashboard! You are logged in.</p>
+    <main className="max-w-4xl mx-auto mt-10">
+      <h1 className="text-3xl font-semibold">Dashboard</h1>
+      <p className="mt-2 text-gray-700">
+        Welcome back, {session?.user?.email}.
+      </p>
     </main>
   );
 } 
