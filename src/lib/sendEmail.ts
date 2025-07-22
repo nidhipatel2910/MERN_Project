@@ -1,6 +1,5 @@
-import nodemailer from "nodemailer";
-
 export async function sendSecurityEmail(subject: string, text: string) {
+  const nodemailer = (await import("nodemailer")).default;
   const transporter = nodemailer.createTransport({
     host: process.env.SMTP_SERVER,
     auth: {

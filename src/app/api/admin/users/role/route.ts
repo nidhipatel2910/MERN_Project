@@ -7,6 +7,8 @@ import { logAuditEvent } from "@/lib/audit";
 import { notifySlack } from "@/lib/notifySlack";
 import { sendSecurityEmail } from "@/lib/sendEmail";
 
+export const runtime = "nodejs";
+
 export async function PATCH(req: Request) {
   const session = await getServerSession(authOptions);
   if (!session || session.user.role !== "admin") {
