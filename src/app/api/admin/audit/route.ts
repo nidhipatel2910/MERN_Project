@@ -11,7 +11,7 @@ export async function GET() {
   const client = await clientPromise;
   const db = client.db();
   const logs = await db.collection("audit_logs")
-    .find({})
+    .find({} as Record<string, unknown>)
     .sort({ timestamp: -1 })
     .limit(50)
     .toArray();

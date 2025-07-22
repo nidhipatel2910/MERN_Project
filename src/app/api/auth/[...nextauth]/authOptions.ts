@@ -62,7 +62,7 @@ export const authOptions: NextAuthOptions = {
             { $set: { oauthProvider: account.provider } }
           );
           user.id = existing._id.toString();
-          (user as any).role = existing.role || "user";
+          (user as { role?: string }).role = existing.role || "user";
           return true;
         }
         if (!existing) {
@@ -73,9 +73,9 @@ export const authOptions: NextAuthOptions = {
             role: "user",
             createdAt: new Date(),
           });
-          (user as any).role = "user";
+          (user as { role?: string }).role = "user";
         } else {
-          (user as any).role = existing.role || "user";
+          (user as { role?: string }).role = existing.role || "user";
         }
       }
       return true;
@@ -83,16 +83,16 @@ export const authOptions: NextAuthOptions = {
     async jwt({ token, user, account }: { token: JWT; user?: User; account?: Account | null }) {
       if (user) {
         token.id = user.id;
-        token.role = (user as any).role || "user";
+        token.role = (user as { role?: string }).role || "user";
       }
       return token;
     },
     async session({ session, token }: { session: Session; token: JWT }) {
       if (token?.id && session.user && typeof session.user === 'object') {
-        (session.user as any).id = token.id;
+        (session.user as { id?: string }).id = token.id;
       }
       if (token?.role && session.user && typeof session.user === 'object') {
-        (session.user as any).role = token.role;
+        (session.user as { role?: string }).role = token.role;
       }
       return session;
     },

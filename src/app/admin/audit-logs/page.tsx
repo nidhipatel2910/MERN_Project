@@ -8,7 +8,7 @@ interface AuditLog {
   actorId: string;
   targetUserId: string;
   action: string;
-  details: Record<string, any>;
+  details: Record<string, unknown>;
 }
 
 export default function AuditLogsPage() {

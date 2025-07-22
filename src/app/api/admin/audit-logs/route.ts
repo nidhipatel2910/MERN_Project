@@ -14,7 +14,7 @@ export async function GET(req: Request) {
   const pageSize = 10;
   const client = await clientPromise;
   const db = client.db();
-  const filter: any = {};
+  const filter: Record<string, unknown> = {};
   if (action) filter.action = action;
   const totalLogs = await db.collection("audit_logs").countDocuments(filter);
   const logs = await db

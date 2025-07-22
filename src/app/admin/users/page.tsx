@@ -16,8 +16,6 @@ export default function AdminUserPage() {
   const [loading, setLoading] = useState(false);
   const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
   const session = useSession().data;
-  const sessionUserId = session?.user?.id || "";
-  const adminCount = users.filter(u => u.role === "admin").length;
 
   const fetchUsers = async () => {
     setLoading(true);

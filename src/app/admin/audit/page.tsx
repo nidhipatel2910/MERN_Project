@@ -6,7 +6,7 @@ interface AuditEntry {
   targetUserId: string;
   action: string;
   timestamp: string;
-  details: Record<string, any>;
+  details: Record<string, unknown>;
 }
 export default function AuditLogPage() {
   const [logs, setLogs] = useState<AuditEntry[]>([]);
