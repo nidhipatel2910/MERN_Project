@@ -4,6 +4,8 @@ import clientPromise from "@/lib/mongodb";
 import { ObjectId } from "mongodb";
 import { NextResponse } from "next/server";
 import { logAuditEvent } from "@/lib/audit";
+import { notifySlack } from "@/lib/notifySlack";
+import { sendSecurityEmail } from "@/lib/sendEmail";
 
 export async function PATCH(req: Request) {
   const session = await getServerSession(authOptions);
@@ -38,5 +40,14 @@ export async function PATCH(req: Request) {
       newRole,
     },
   });
+  // Send notifications for high-risk operations
+  if (targetUser.role === "admin" && newRole !== "admin") {
+    const msg = `Role updated: ${session.user.email} changed ${targetUser.email} from admin to ${newRole}`;
+    await notifySlack(msg);
+    await sendSecurityEmail(
+      "Admin Role Change Detected",
+      `${session.user.email} changed ${targetUser.email} from admin to ${newRole} at ${new Date().toISOString()}`
+    );
+  }
   return NextResponse.json({ success: true, role: newRole });
 } 
