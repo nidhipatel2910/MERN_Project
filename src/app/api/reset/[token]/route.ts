@@ -1,11 +1,11 @@
 import { ObjectId } from "mongodb";
 import { hash } from "bcryptjs";
 import clientPromise from "@/lib/mongodb";
-import { NextResponse } from "next/server";
+import { NextResponse, NextRequest } from "next/server";
 
-export async function POST(req: Request, { params }: { params: { token: string } }) {
-  const { token } = params;
+export async function POST(req: NextRequest) {
   const { password } = await req.json();
+  const token = req.nextUrl.pathname.split("/").pop();
   const client = await clientPromise;
   const db = client.db();
   const reset = await db.collection("password_resets").findOne({ token });
