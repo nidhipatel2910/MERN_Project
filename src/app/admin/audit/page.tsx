@@ -21,35 +21,55 @@ export default function AuditLogPage() {
       .catch(() => setError("Failed to load audit logs"));
   }, []);
   return (
-    <main className="max-w-5xl mx-auto mt-10 p-6 bg-white shadow rounded">
-      <h1 className="text-2xl font-semibold mb-4">Audit Logs</h1>
-      {error && <p className="text-red-600">{error}</p>}
-      <table className="w-full text-sm border-collapse">
-        <thead>
-          <tr className="border-b">
-            <th className="text-left px-2 py-1">Timestamp</th>
-            <th className="text-left px-2 py-1">Action</th>
-            <th className="text-left px-2 py-1">Actor</th>
-            <th className="text-left px-2 py-1">Target</th>
-            <th className="text-left px-2 py-1">Details</th>
-          </tr>
-        </thead>
-        <tbody>
-          {logs.map((entry) => (
-            <tr key={entry._id} className="border-b">
-              <td className="px-2 py-1">{new Date(entry.timestamp).toLocaleString()}</td>
-              <td className="px-2 py-1">{entry.action}</td>
-              <td className="px-2 py-1">{entry.actorId}</td>
-              <td className="px-2 py-1">{entry.targetUserId}</td>
-              <td className="px-2 py-1">
-                <pre className="whitespace-pre-wrap text-xs text-gray-600">
-                  {JSON.stringify(entry.details, null, 2)}
-                </pre>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+    <main className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center">
+      <section className="w-full max-w-5xl bg-white rounded-2xl shadow-2xl p-8">
+        <h1 className="text-3xl font-extrabold text-indigo-700 mb-6 text-center">
+          Audit Logs
+        </h1>
+        {error && (
+          <p className="text-red-600 text-center mb-4">{error}</p>
+        )}
+        <div className="overflow-x-auto rounded-lg border border-gray-200 shadow-sm">
+          <table className="w-full text-sm border-collapse">
+            <thead>
+              <tr className="bg-indigo-50 border-b">
+                <th className="text-left px-4 py-3 font-semibold text-indigo-700">Timestamp</th>
+                <th className="text-left px-4 py-3 font-semibold text-indigo-700">Action</th>
+                <th className="text-left px-4 py-3 font-semibold text-indigo-700">Actor</th>
+                <th className="text-left px-4 py-3 font-semibold text-indigo-700">Target</th>
+                <th className="text-left px-4 py-3 font-semibold text-indigo-700">Details</th>
+              </tr>
+            </thead>
+            <tbody>
+              {logs.length === 0 ? (
+                <tr>
+                  <td colSpan={5} className="text-center py-8 text-gray-400">
+                    No audit logs found.
+                  </td>
+                </tr>
+              ) : (
+                logs.map((entry) => (
+                  <tr key={entry._id} className="border-b hover:bg-indigo-50 transition">
+                    <td className="px-4 py-2">{new Date(entry.timestamp).toLocaleString()}</td>
+                    <td className="px-4 py-2">
+                      <span className="inline-block bg-indigo-100 text-indigo-700 px-2 py-0.5 rounded text-xs font-medium">
+                        {entry.action}
+                      </span>
+                    </td>
+                    <td className="px-4 py-2">{entry.actorId}</td>
+                    <td className="px-4 py-2">{entry.targetUserId}</td>
+                    <td className="px-4 py-2">
+                      <pre className="whitespace-pre-wrap text-xs text-gray-600 bg-gray-50 rounded p-2">
+                        {JSON.stringify(entry.details, null, 2)}
+                      </pre>
+                    </td>
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </table>
+        </div>
+      </section>
     </main>
   );
-} 
+}
